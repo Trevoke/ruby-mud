@@ -15,9 +15,7 @@ end
 class User < Account
 
   def self.create(io, username, password)
-    CSV.open(SHADOW_FILE, 'a', col_sep: ':') do |csv|
-      csv << [username, BCrypt::Password.create(password)]
-    end
+    Shadow.create!(username, password)
     self.new(io, username)
   end
 

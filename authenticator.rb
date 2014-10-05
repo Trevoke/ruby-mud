@@ -1,7 +1,6 @@
+require_relative 'shadow'
 require_relative 'user'
 require 'csv'
-
-SHADOW_FILE = 'db/shadow'
 
 class Authenticator
 
@@ -14,7 +13,7 @@ class Authenticator
     loop do
       @io.puts 'Enter your username, or type "new" to register a new account:'
       user_input = @io.gets.chomp
-      break if user_input.downcase == 'new' || username_exists?(user_input)
+      break if user_input.downcase == 'new' || Shadow.username_exists?(user_input)
       @io.puts 'Username does not exist, please try again.'
     end
     if user_input.downcase == 'new'
@@ -29,7 +28,7 @@ class Authenticator
     loop do
       @io.puts 'Enter the name by which you wish to be known here:'
       username = @io.gets.chomp
-      break if username_available?(username)
+      break if Shadow.username_available?(username)
       @io.puts 'Username not available.'
     end
     loop do
@@ -44,7 +43,7 @@ class Authenticator
   end
 
   def login_user(username)
-    account_password = password_for(username)
+    account_password = Shadow.password_for(username)
     password = ''
     3.times do
       @io.puts 'Enter your password:'
@@ -58,20 +57,4 @@ class Authenticator
     end
   end
 
-  def username_available?(username)
-    CSV.foreach(SHADOW_FILE, col_sep: ':').none? do |row|
-      row[0] == username
-    end
-  end
-
-  def username_exists?(username)
-    CSV.foreach(SHADOW_FILE, col_sep: ':').any? do |row|
-      row[0] == username
-    end
-  end
-
-  def password_for(username)
-    account_info = CSV.foreach(SHADOW_FILE, col_sep: ':').find { |row| row[0] == username }
-    BCrypt::Password.new(account_info[1])
-  end
 end
