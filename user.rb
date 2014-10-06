@@ -1,19 +1,13 @@
 require 'bcrypt'
 
-class Account
-  def initialize(io)
-    @io = io
-  end
-end
-
-class InvalidUser < Account
+class InvalidUser
   def authenticated?
     false
   end
 end
 
-class User < Account
-
+class User
+  attr_reader :username, :io
   def self.create(io, username, password)
     Shadow.create!(username, password)
     self.new(io, username)
@@ -21,7 +15,7 @@ class User < Account
 
   def initialize(io, username)
     @username = username
-    super(io)
+    @io = io
   end
 
   def authenticated?

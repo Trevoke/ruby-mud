@@ -1,7 +1,9 @@
 require 'bundler'
 Bundler.require
 require 'gserver'
+
 require_relative 'authenticator'
+require_relative 'game_loop'
 
 class Mud < GServer
   def initialize(port=5309, *args)
@@ -11,18 +13,18 @@ class Mud < GServer
   def serve(io)
     user = login_user(io)
     return unless user.authenticated?
-    play_game(io)
-    rescue Exception => e
-      puts e
-      exit 1
+    play_game(user)
+  rescue Exception => e
+    puts "User #{user} ran into this trouble:"
+    puts e
   end
 
   def login_user(io)
-    user = Authenticator.new(io).call
+    Authenticator.new(io).call
   end
 
-  def play_game(io)
-    io.puts 'You win!'
+  def play_game(user)
+    GameLoop.new(user).call
   end
 end
 

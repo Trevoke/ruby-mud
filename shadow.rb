@@ -1,3 +1,5 @@
+require 'bcrypt'
+
 class Shadow
   DB = './db/shadow'
 
@@ -10,14 +12,18 @@ class Shadow
   end
 
   def self.username_exists?(username)
-    CSV.foreach(DB, PARSING_OPTIONS).any? do |row|
+    in_shadow_file.any? do |row|
       row[0] == username
     end
   end
 
   def self.password_for(username)
-    account_info = CSV.foreach(DB, PARSING_OPTIONS).find { |row| row[0] == username }
+    account_info = in_shadow_file.find { |row| row[0] == username }
     BCrypt::Password.new(account_info[1])
+  end
+
+  def self.in_shadow_file
+    CSV.foreach(DB, PARSING_OPTIONS)
   end
 
   def self.create!(username, password)

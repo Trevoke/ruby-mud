@@ -53,7 +53,7 @@ class Authenticator
     if account_password == password
       User.new(@io, username)
     else
-      InvalidUser.new(@io)
+      InvalidUser.new
     end
   end
 
