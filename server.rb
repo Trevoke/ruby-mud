@@ -30,5 +30,8 @@ end
 
 mud = Mud.new(5309)
 
+require 'fileutils'
+FileUtils.touch 'db/shadow' unless File.exists? 'db/shadow'
+
 mud.start
 mud.join
