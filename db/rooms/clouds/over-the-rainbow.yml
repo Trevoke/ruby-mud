@@ -1,0 +1,4 @@
+short: Clouds, over a rainbow
+long: The soft ground beneath turns out to be a cloud. Although it is patchy and it reveals parts of the terrain far below it, it offers secure footing.
+exits:
+  west: start

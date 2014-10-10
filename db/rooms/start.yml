@@ -1,0 +1,4 @@
+short: Starting point
+long: This room is very luminous. The ground is soft and somehow invisible. Somehow, exits can be distinguished as patches of light among the luminescence.
+exits:
+  east: clouds/over-the-rainbow

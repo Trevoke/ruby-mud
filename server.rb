@@ -12,7 +12,7 @@ class Mud < GServer
 
   def serve(io)
     user = login_user(io)
-    return unless user.authenticated?
+    io.puts 'We hope you try again soon' && return unless user.authenticated?
     play_game(user)
   rescue Exception => e
     puts "User #{user} ran into this trouble:"
