@@ -5,6 +5,10 @@ require 'gserver'
 require_relative 'authenticator'
 require_relative 'game_loop'
 
+Dir.mkdir('db/player-state') unless Dir.exist?('db/player-state')
+
+$logged_on_users = []
+
 class Mud < GServer
   def initialize(port=5309, *args)
     super(port, *args)
@@ -12,7 +16,9 @@ class Mud < GServer
 
   def serve(io)
     user = login_user(io)
-    io.puts 'We hope you try again soon' && return unless user.authenticated?
+    unless user.authenticated?
+      io.puts 'We hope you try again soon' && return
+    end
     play_game(user)
   rescue Exception => e
     puts "User #{user} ran into this trouble:"
@@ -24,7 +30,9 @@ class Mud < GServer
   end
 
   def play_game(user)
+    $logged_on_users << user
     GameLoop.new(user).call
+    $logged_on_users.delete(user)
   end
 end
 

@@ -1,15 +1,20 @@
+require_relative 'command_handler'
+
 class GameLoop
   def initialize(user)
     @user = user
     @room = user.saved_room
+    @command_handler = CommandHandler.new(@user)
   end
 
   def call
     display_room
     while (input = get_user_input) != 'quit'
       case input
-        when /^('|say )/ then speak(input)
+        when @command_handler.ooc_command then @command_handler.send(:ooc, input)
+        when @command_handler.who_command then @command_handler.send(:who)
         when @room.allowed_exit? then go(input)
+        else output('Sorry, I don\'t understand')
       end
     end
     @user.save_room(@room)
@@ -25,10 +30,6 @@ class GameLoop
   def go(direction)
     @room = Room.new(@room[direction])
     display_room
-  end
-
-  def speak(message)
-    output(message.sub(/^('|say )/, ''))
   end
 
   def output(message)
