@@ -5,6 +5,8 @@ require 'gserver'
 require_relative 'authenticator'
 require_relative 'game_loop'
 
+require 'fileutils'
+FileUtils.touch 'db/shadow' unless File.exists? 'db/shadow'
 Dir.mkdir('db/player-state') unless Dir.exist?('db/player-state')
 
 $logged_on_users = []
@@ -16,12 +18,12 @@ class Mud < GServer
 
   def serve(io)
     user = login_user(io)
-    unless user.authenticated?
-      io.puts 'We hope you try again soon' && return
-    end
+    disconnect_bad_user(io) && return unless user.authenticated?
     play_game(user)
-  rescue Exception => e
-    puts "User #{user} ran into this trouble:"
+  rescue NoMethodError => e # People who disconnect without quitting
+    $logged_on_users.delete(user)
+  rescue Exception => e # Until I have a better idea
+    puts "User #{user.username} ran into this trouble:"
     puts e
   end
 
@@ -34,12 +36,15 @@ class Mud < GServer
     GameLoop.new(user).call
     $logged_on_users.delete(user)
   end
+
+  def disconnect_bad_user(io)
+    io.puts 'Try again soon!'
+  end
+
 end
 
 mud = Mud.new(5309)
-
-require 'fileutils'
-FileUtils.touch 'db/shadow' unless File.exists? 'db/shadow'
+mud.audit = true
 
 mud.start
 mud.join

@@ -5,7 +5,8 @@ class CommandHandler
 
   def commands
     {
-        ooc_command => :ooc
+        ooc_command => :ooc,
+        who_command => :who
     }
   end
 
@@ -30,7 +31,7 @@ class CommandHandler
     clean_message = message.gsub(/^ooc /, '')
     msg = "#{Time.now.strftime('%H:%M:%S')} [OOC] #{@user.username}: #{clean_message}"
     $logged_on_users.each do |user|
-      user.io.puts msg
+      user.io.puts Rainbow(msg).green
     end
   end
 
