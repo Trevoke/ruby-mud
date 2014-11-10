@@ -1,11 +1,11 @@
-require_relative 'shadow'
 require_relative 'user'
 require 'csv'
 
 class Authenticator
 
-  def initialize(io)
+  def initialize(io, shadow_file)
     @io = io
+    @shadow_file = shadow_file
   end
 
   def call
@@ -13,7 +13,7 @@ class Authenticator
     loop do
       @io.puts 'Enter your username, or type "new" to register a new account:'
       user_input = @io.gets.chomp
-      break if user_input.downcase == 'new' || Shadow.username_exists?(user_input)
+      break if user_input.downcase == 'new' || @shadow_file.username_exists?(user_input)
       @io.puts 'Username does not exist, please try again.'
     end
     if user_input.downcase == 'new'
@@ -28,7 +28,7 @@ class Authenticator
     loop do
       @io.puts 'Enter the name by which you wish to be known here:'
       username = @io.gets.chomp
-      break if Shadow.username_available?(username)
+      break if @shadow_file.username_available?(username)
       @io.puts 'Username not available.'
     end
     loop do
@@ -43,7 +43,7 @@ class Authenticator
   end
 
   def login_user(username)
-    account_password = Shadow.password_for(username)
+    account_password = @shadow_file.password_for(username)
     password = ''
     3.times do
       @io.puts 'Enter your password:'
