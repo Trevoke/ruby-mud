@@ -11,6 +11,7 @@ class GameLoop
     display_room
     while (input = get_user_input) != 'quit'
       case input
+        # TODO everything should be a command. Take inspiration from pry.
         when @command_handler.ooc_command then @command_handler.send(:ooc, input)
         when @command_handler.who_command then @command_handler.send(:who)
         when @room.allowed_exit? then go(input)

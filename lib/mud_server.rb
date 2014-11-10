@@ -7,7 +7,8 @@ require_relative 'shadow'
 require_relative 'authenticator'
 require_relative 'game_loop'
 
-$logged_on_users = []
+$logged_on_users = [] # TODO handle "chat" as a permanent group
+# TODO set up group chats as commands
 
 class MudServer < GServer
 
