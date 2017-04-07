@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'active_support/inflector'
 
-class MudObject
+class MudObject < BasicObject
   attr_accessor :name, :description
 end
 
@@ -21,23 +21,7 @@ class Command < MudObject
 
 end
 
-class SpawnItem < Command
-  def self.call(object)
-    case object
-      when Symbol
-        object.to_s.classify.constantize.new
-      else
-        object
-    end
 
-  end
-end
-
-class AddItem < Command
-  def self.call(location, object)
-    location.add_item(SpawnItem.call(object))
-  end
-end
 
 class Room < MudObject
   attr_accessor :items_on_ground, :floating_items
@@ -63,6 +47,22 @@ end
 class GravityTest < MiniTest::Test
 
 
+class AddItem < Command
+  def self.call(location, object)
+    location.add_item(SpawnItem.call(object))
+  end
+end
+class SpawnItem < Command
+  def self.call(object)
+    case object
+      when ::Symbol
+        object.to_s.classify.constantize.new
+      else
+        object
+    end
+
+  end
+end
 
   def test_room_has_gravity_source
     room = TestRoom.new
